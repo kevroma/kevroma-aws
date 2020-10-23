@@ -1,0 +1,22 @@
+schemaVersion: "2.2"
+description: "PowerShell script to unjoin domain multiple Windows instance.. Made by Kevin"
+parameters:
+      accesskey:
+        type: String
+      secretkey:
+        type: String
+      region:
+        type: String
+mainSteps:
+  - action: aws:runPowerShellScript
+    name: "UnjoinDomain"
+    inputs:
+      runCommand:
+      - Initialize-AWSDefaults -AccessKey {{accesskey}} -SecretKey {{secretkey}} -Region {{region}}
+      - '# These are variables to put your domain username and password info'
+      - $password = (Get-SSMParameterValue -Name /domain/password -WithDecryption $True).Parameters[0].Value | ConvertTo-SecureString -asPlainText -Force
+      - $username = (Get-SSMParameterValue -Name /domain/username).Parameters[0].Value
+      - $credential = New-Object System.Management.Automation.PSCredential($username,$password)
+      - '# This command is to unjoin domain from a server'
+      - Remove-Computer -UnjoinDomaincredential $credential -PassThru -Verbose -Force
+      - Restart-Computer -Force
