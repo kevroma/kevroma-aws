@@ -1,0 +1,53 @@
+---
+schemaVersion: "2.0"
+description: "Run a Shell script for create user -- made by Kevin"
+parameters:
+      useradd1:
+        type: String
+      useradd2:
+        type: String
+      useradd3:
+        type: String
+      useradd4:
+        type: String
+      useradd5:
+        type: String
+      Password1:
+        type: String
+      Password2:
+        type: String
+      Password3:
+        type: String
+      Password4:
+        type: String
+      Password5:
+        type: String
+mainSteps:
+- action: "aws:runShellScript"
+  name: "runShellScript"
+  inputs:
+    runCommand:
+    - sudo su -
+    - useradd -m {{useradd1}}
+    - useradd -m {{useradd2}}
+    - useradd -m {{useradd3}}
+    - useradd -m {{useradd4}}
+    - useradd -m {{useradd5}}
+    - echo "{{useradd1}} ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    - echo "{{useradd2}} ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    - echo "{{useradd3}} ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    - echo "{{useradd4}} ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    - echo "{{useradd5}} ALL=(ALL:ALL) ALL" >> /etc/sudoers
+    - echo '{{useradd1}}:{{Password1}}' >> test.txt
+    - echo '{{useradd2}}:{{Password2}}'>> test.txt
+    - echo '{{useradd3}}:{{Password3}}' >> test.txt
+    - echo '{{useradd4}}:{{Password4}}' >> test.txt
+    - echo '{{useradd5}}:{{Password5}}' >> test.txt
+    - usermod --shell /bin/bash --home /home/{{useradd1}} {{useradd1}}
+    - usermod --shell /bin/bash --home /home/{{useradd2}} {{useradd2}}
+    - usermod --shell /bin/bash --home /home/{{useradd3}} {{useradd3}}
+    - usermod --shell /bin/bash --home /home/{{useradd4}} {{useradd4}}
+    - usermod --shell /bin/bash --home /home/{{useradd5}} {{useradd5}}
+    - chpasswd < test.txt
+    - rm /usr/bin/test.txt
+    - sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config

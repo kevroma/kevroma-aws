@@ -1,0 +1,17 @@
+---
+schemaVersion: "2.0"
+description: "Run a Shell script for basic CENTOS hostname -- change by Kevin"
+mainSteps:
+- action: "aws:runShellScript"
+  name: "runShellScript"
+  inputs:
+    runCommand:
+    - sudo su -
+    - aws configure set aws_access_key_id <accesskey>
+    - aws configure set aws_secret_access_key <secretkey>
+    - aws configure set default.region ap-northeast-1
+    - instanceId=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+    - hostname=$(aws ec2 describe-instances --instance-id $instanceId --region ap-northeast-1 --query 'Reservations[0].Instances[0].Tags[?Key==`Name`].Value' --output text)
+    - sudo hostnamectl set-hostname --static $hostname
+    - "echo 'preserve_hostname: true' >> /etc/cloud/cloud.cfg"
+    - reboot
