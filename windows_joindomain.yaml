@@ -1,0 +1,39 @@
+schemaVersion: "2.2"
+description: "PowerShell script to domain join multiple Windows instance.. Made by Kevin"
+parameters:
+      accesskey:
+        type: String
+      secretkey:
+        type: String
+      region:
+        type: String
+      ipdns:
+        type: String
+        default: 10.12.7.233
+      ipdns2:
+        type: String
+        default: 10.12.7.212
+      domain:
+        type: String
+        default: naruto.web
+mainSteps:
+  - action: aws:runPowerShellScript
+    name: "JoinDomain"
+    inputs:
+      runCommand:
+      - '# Cannot put "change hostname" here because each server have different hostname.. change hostname need to do another script'
+      - ''
+      - '# This is for powershell to immediately stop if it see an error'
+      - $ErrorActionPreference = 'Stop'
+      - ''
+      - Initialize-AWSDefaults -AccessKey {{accesskey}} -SecretKey {{secretkey}} -Region {{region}}
+      - '# This command is to set DNS1 and DSN2'
+      - Set-DnsClientServerAddress -InterfaceAlias * -ServerAddresses ("{{ipdns}}","{{ipdns2}}")
+      - '# These are variables to put the domain, and your username and password info'
+      - $domain = "{{domain}}"
+      - $password = (Get-SSMParameterValue -Name /domain/password -WithDecryption $True).Parameters[0].Value | ConvertTo-SecureString -asPlainText -Force
+      - $username = (Get-SSMParameterValue -Name /domain/username).Parameters[0].Value
+      - $credential = New-Object System.Management.Automation.PSCredential($username,$password)
+      - '# This command is to domain join a server that use the credentials'
+      - Add-Computer -DomainName $domain -Credential $credential
+      - Restart-Computer -Force

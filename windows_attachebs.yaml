@@ -1,0 +1,15 @@
+schemaVersion: "2.2"
+description: "PowerShell script to attach EBS volume to Windows.. Made by Kevin"
+parameters:
+      disknumber:
+        type: String
+      diskletter:
+        type: String
+mainSteps:
+  - action: aws:runPowerShellScript
+    name: "AttachEBSVolume"
+    inputs:
+      runCommand:
+      - Initialize-Disk {{disknumber}}
+      - New-Partition -DiskNumber {{disknumber}} -DriveLetter {{diskletter}} -UseMaximumSize
+      - format-volume -DriveLetter {{diskletter}} -FileSystem NTFS

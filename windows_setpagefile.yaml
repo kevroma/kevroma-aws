@@ -1,0 +1,24 @@
+schemaVersion: "2.2"
+description: "PowerShell script to set Windows pagefile.. Made by Kevin"
+parameters:
+      DriveLetter:
+        type: String
+      InitialSize:
+        type: String
+      MaximumSize:
+        type: String
+mainSteps:
+  - action: aws:runPowerShellScript
+    name: "SetWindowsPagefile"
+    inputs:
+      runCommand:
+      - $computersys = Get-WmiObject Win32_ComputerSystem -EnableAllPrivileges
+      - $computersys.AutomaticManagedPagefile = $False
+      - $computersys.Put()
+      - Set-WMIInstance -Class Win32_PageFileSetting -Arguments @{name="{{DriveLetter}}:\pagefile.sys";InitialSize = {{InitialSize}}; MaximumSize = {{MaximumSize}}}
+      - $cpagefile = Get-WmiObject -Query "Select * From Win32_PageFileSetting Where Name='c:\\pagefile.sys'" -EnableAllPrivileges
+      - $cpagefile.delete()
+      - #This is for change existing pagefile Windows Setting
+      - #$pagefile.delete()
+      - #Set-WMIInstance -Class Win32_PageFileSetting -Arguments @{name="d:\pagefile.sys";InitialSize = {{InitialSize}}; MaximumSize = {{MaximumSize}}}
+      - Restart-Computer -Force

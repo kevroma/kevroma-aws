@@ -1,0 +1,23 @@
+schemaVersion: "2.2"
+description: "PowerShell script to install Features in Windows.. Made by Kevin"
+mainSteps:
+ - action: aws:runPowerShellScript
+   name: "InstallWindowsFeature"
+   inputs:
+     runCommand:
+     - wget https://download.visualstudio.microsoft.com/download/pr/854cbd11-4b96-4a44-9664-b95991c0c4f7/8ec4944a5bd770faba2f769e647b1e6e/dotnet-hosting-3.1.8-win.exe -O c:\users\administrator\downloads\dotnet-hosting-3.1.8-win.exe
+     - cd c:\Users\administrator\downloads\
+     - .\dotnet-hosting-3.1.8-win.exe /silent /install
+     - wget https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v7.8.8/npp.7.8.8.Installer.x64.exe -O c:\users\administrator\downloads\npp.7.8.8.Installer.x64.exe
+     - cd c:\Users\administrator\downloads\
+     - .\npp.7.8.8.Installer.x64.exe /S /v /qn
+     - wget https://www.7-zip.org/a/7z1900-x64.exe -O c:\users\administrator\downloads\7z1900-x64.exe
+     - cd c:\Users\administrator\downloads\
+     - .\7z1900-x64.exe /S /v /qn
+     - wget https://github.com/PowerShell/PowerShell/releases/download/v7.1.0-preview.7/PowerShell-7.1.0-preview.7-win-x64.msi -O c:\users\administrator\downloads\PowerShell-7.1.0-preview.7-win-x64.msi
+     - cd c:\Users\administrator\downloads\
+     - .\PowerShell-7.1.0-preview.7-win-x64.msi /quiet
+     - wget https://download.sysinternals.com/files/SysinternalsSuite.zip -O c:\users\administrator\downloads\SysinternalsSuite.zip
+     - Expand-Archive -LiteralPath 'c:\users\administrator\downloads\SysinternalsSuite.zip' -DestinationPath "C:\Program Files\SysinternalsSuite\"
+     - $Path = $env:TEMP; $Installer = "chrome_installer.exe"; Invoke-WebRequest "http://dl.google.com/chrome/install/375.126/chrome_installer.exe" -OutFile $Path$Installer; Start-Process -FilePath $Path$Installer -Args "/silent /install" -Verb RunAs -Wait; Remove-Item $Path$Installer
+     - shutdown -r -t 0
