@@ -9,13 +9,13 @@ parameters:
         type: String
       ipdns:
         type: String
-        default: 10.12.7.233
+        default: 
       ipdns2:
         type: String
-        default: 10.12.7.212
+        default: 
       domain:
         type: String
-        default: naruto.web
+        default: 
 mainSteps:
   - action: aws:runPowerShellScript
     name: "JoinDomain"
